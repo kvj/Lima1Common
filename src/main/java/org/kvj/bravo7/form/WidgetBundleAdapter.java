@@ -2,7 +2,7 @@ package org.kvj.bravo7.form;
 
 import android.os.Bundle;
 
-abstract public class WidgetBundleAdapter<V, T> {
+abstract public class WidgetBundleAdapter<T> {
 
 	protected T defaultValue;
 	private BundleAdapter<T> adapter;

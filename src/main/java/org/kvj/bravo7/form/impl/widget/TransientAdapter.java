@@ -5,7 +5,7 @@ import org.kvj.bravo7.form.WidgetBundleAdapter;
 
 import android.os.Bundle;
 
-public class TransientAdapter<T> extends WidgetBundleAdapter<T, T> {
+public class TransientAdapter<T> extends WidgetBundleAdapter<T> {
 
 	private T value;
 

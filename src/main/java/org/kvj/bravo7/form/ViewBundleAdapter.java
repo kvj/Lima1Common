@@ -2,7 +2,7 @@ package org.kvj.bravo7.form;
 
 import android.view.View;
 
-public abstract class ViewBundleAdapter<V extends View, T> extends WidgetBundleAdapter<V, T> {
+public abstract class ViewBundleAdapter<V extends View, T> extends WidgetBundleAdapter<T> {
 
 	V view = null;
 	protected int resID;

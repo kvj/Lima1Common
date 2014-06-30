@@ -6,12 +6,15 @@ import java.util.Map;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 
 public class FormController {
 
-	class Pair {
-		WidgetBundleAdapter<?, ?> viewAdapter;
+    private Bundle values = null;
+
+    class Pair {
+		WidgetBundleAdapter<?> viewAdapter;
 	}
 
 	private static final String TAG = "Form";
@@ -24,7 +27,7 @@ public class FormController {
 		this.view = view;
 	}
 
-	public <V, T> void add(WidgetBundleAdapter<V, T> viewAdapter, String name) {
+	public <V, T> void add(WidgetBundleAdapter<T> viewAdapter, String name) {
 		Pair pair = new Pair();
 		pair.viewAdapter = viewAdapter;
 		pairs.put(name, pair);
@@ -42,6 +45,15 @@ public class FormController {
 		}
 	}
 
+    public boolean loadOne(String name) {
+        Pair pair = pairs.get(name);
+        if (values != null && pair != null) {
+            pair.viewAdapter.restore(name, values);
+            return true;
+        }
+        return false;
+    }
+
 	private void loadValues(Bundle data) {
 		if (null != data) {
 			for (String name : pairs.keySet()) {
@@ -51,6 +63,7 @@ public class FormController {
 				// pair.viewAdapter.get(name, data));
 			}
 		}
+        this.values = data;
 	}
 
 	public void load(Bundle dialogArguments, Bundle data) {
@@ -94,7 +107,7 @@ public class FormController {
 		return (T) p.viewAdapter.getWidgetValue();
 	}
 
-	public <T extends WidgetBundleAdapter<?, ?>> T getAdapter(String name, Class<T> cl) {
+	public <T extends WidgetBundleAdapter<?>> T getAdapter(String name, Class<T> cl) {
 		Pair p = pairs.get(name);
 		if (null == p) {
 			return null;
@@ -107,8 +120,8 @@ public class FormController {
 			Pair pair = pairs.get(name);
 			Object value = pair.viewAdapter.getWidgetValue();
 			Object orig = originalValues.get(name);
-			// Log.i(TAG, "Load: " + name + " = " + orig + " - " + value);
 			if (null != value && null != orig && !value.equals(orig)) {
+                Log.i(TAG, "Load: " + name + " = " + orig + " - " + value);
 				return true;
 			}
 		}
