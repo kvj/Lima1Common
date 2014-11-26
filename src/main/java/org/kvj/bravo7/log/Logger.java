@@ -6,6 +6,27 @@ import android.util.Log;
  * Created by vorobyev on 6/12/14.
  */
 public class Logger {
+
+    public enum LoggerLevel {Debug, Info, Warning, Error};
+
+    public static interface LoggerOutput {
+        public boolean output(Logger logger, LoggerLevel level, Throwable e, String line);
+    }
+
+    public static class NullLogger implements LoggerOutput {
+
+        @Override
+        public boolean output(Logger logger, LoggerLevel level, Throwable e, String line) {
+            return true;
+        }
+    }
+
+    private static LoggerOutput output = new NullLogger();
+
+    public static void setOutput(LoggerOutput output) {
+        Logger.output = output;
+    }
+
     private String LOG = null;
 
     public Logger(String title) {
@@ -41,21 +62,27 @@ public class Logger {
         return sb.toString();
     }
 
-    public String i(Object... data) {
+    public String d(Object... data) {
         String str = log(data, 0);
-        Log.i(LOG, str);
+        if (null != output) {
+            output.output(this, LoggerLevel.Debug, null, str);
+        }
         return str;
     }
 
-    public String d(Object... data) {
+    public String i(Object... data) {
         String str = log(data, 0);
-        Log.d(LOG, str);
+        if (null != output) {
+            output.output(this, LoggerLevel.Info, null, str);
+        }
         return str;
     }
 
     public String w(Object... data) {
         String str = log(data, 0);
-        Log.w(LOG, str);
+        if (null != output) {
+            output.output(this, LoggerLevel.Warning, null, str);
+        }
         return str;
     }
 
@@ -67,8 +94,13 @@ public class Logger {
             from = 1;
         }
         String str = log(data, from);
-        Log.e(LOG, str, e);
+        if (null != output) {
+            output.output(this, LoggerLevel.Error, e, str);
+        }
         return str;
     }
 
+    public String getTitle() {
+        return LOG;
+    }
 }

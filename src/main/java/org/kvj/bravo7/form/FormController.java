@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 
@@ -79,7 +79,7 @@ public class FormController {
 		loadValues(data);
 	}
 
-	public void load(FragmentActivity activity, Bundle data) {
+	public void load(Activity activity, Bundle data) {
 		Bundle values = new Bundle();
 		if (null != activity.getIntent() && null != activity.getIntent().getExtras()) {
 			values = activity.getIntent().getExtras();
