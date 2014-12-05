@@ -14,7 +14,7 @@ repositories {
 apply plugin: 'android-library'
 
 android {
-    compileSdkVersion 19
+    compileSdkVersion 21
     buildToolsVersion '19.1'
 }
 
