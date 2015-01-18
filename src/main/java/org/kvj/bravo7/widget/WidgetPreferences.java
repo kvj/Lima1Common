@@ -1,20 +1,20 @@
 package org.kvj.bravo7.widget;
 
-import org.kvj.bravo7.widget.WidgetList.ClickListener;
-import org.kvj.bravo7.widget.WidgetList.WidgetInfo;
-
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 
-public abstract class WidgetPreferences extends Activity implements
+import org.kvj.bravo7.widget.WidgetList.ClickListener;
+import org.kvj.bravo7.widget.WidgetList.WidgetInfo;
+
+public abstract class WidgetPreferences extends FragmentActivity implements
 		ClickListener {
 
 	private static final String TAG = "WidgetPrefs";
@@ -40,9 +40,9 @@ public abstract class WidgetPreferences extends Activity implements
 		LayoutParams params = new LayoutParams(
 				FrameLayout.LayoutParams.MATCH_PARENT,
 				FrameLayout.LayoutParams.MATCH_PARENT);
-		root.setId(1);
+		// root.setId(1);
 		setContentView(root, params);
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
+		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 		ft.replace(1, widgetList);
 		widgetList.setClickListener(this);
 		ft.commit();

@@ -11,7 +11,7 @@ buildscript {
 repositories {
     mavenCentral()
 }
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 21
@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:18.0.+'
+    compile 'com.android.support:appcompat-v7:+'
 }
