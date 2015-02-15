@@ -1,15 +1,5 @@
 package org.kvj.bravo7;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
 import android.app.Activity;
 import android.app.Application;
 import android.appwidget.AppWidgetManager;
@@ -19,9 +9,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 
 abstract public class ApplicationContext extends Application {
 
@@ -316,4 +317,15 @@ abstract public class ApplicationContext extends Application {
 	public void setStringPreference(int name, String value) {
 		setStringPreference(getString(name), value);
 	}
+
+    public float dp2px(float dp) {
+        Resources r = getResources();
+        return r.getDisplayMetrics().density * dp;
+    }
+
+    public float sp2px(float dp) {
+        Resources r = getResources();
+        return r.getDisplayMetrics().scaledDensity * dp;
+    }
+
 }

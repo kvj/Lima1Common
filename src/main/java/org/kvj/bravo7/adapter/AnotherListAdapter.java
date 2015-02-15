@@ -1,15 +1,15 @@
 package org.kvj.bravo7.adapter;
 
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import java.util.List;
+
 public abstract class AnotherListAdapter<T> extends BaseAdapter {
-	private List<T> data;
+	protected List<T> data;
 	private int resourceID;
 
 	public AnotherListAdapter(List<T> data, int resourceID) {
@@ -39,9 +39,11 @@ public abstract class AnotherListAdapter<T> extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = (LayoutInflater) parent.getContext()
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		convertView = inflater.inflate(resourceID, parent, false);
+        if (null == convertView) { // inflate
+            LayoutInflater inflater = (LayoutInflater) parent.getContext()
+                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(resourceID, parent, false);
+        }
 		customize(convertView, position);
 		return convertView;
 	}
