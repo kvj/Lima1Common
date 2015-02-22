@@ -2,12 +2,15 @@ package org.kvj.bravo7.form;
 
 import android.os.Bundle;
 
+import org.kvj.bravo7.log.Logger;
+
 abstract public class WidgetBundleAdapter<T> {
 
 	protected T defaultValue;
 	private BundleAdapter<T> adapter;
 	protected FormController controller = null;
 	protected String key = null;
+    protected Logger logger = Logger.forInstance(this);
 
 	public WidgetBundleAdapter(BundleAdapter<T> adapter, T def) {
 		this.defaultValue = def;

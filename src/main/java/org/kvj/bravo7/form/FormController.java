@@ -1,20 +1,29 @@
 package org.kvj.bravo7.form;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
+
+import org.kvj.bravo7.log.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FormController {
 
     private Bundle values = null;
+    private Logger logger = Logger.forInstance(this);
 
-    class Pair {
-		WidgetBundleAdapter<?> viewAdapter;
+    public void setView(View view) {
+        this.view = view;
+    }
+
+    class Pair<T> {
+		WidgetBundleAdapter<T> viewAdapter;
 	}
 
 	private static final String TAG = "Form";
@@ -45,6 +54,14 @@ public class FormController {
 		}
 	}
 
+    public void setAsOriginal() {
+        originalValues.clear();
+        for (String name : pairs.keySet()) {
+            Pair pair = pairs.get(name);
+            originalValues.put(name, pair.viewAdapter.getWidgetValue());
+        }
+    }
+
     public boolean loadOne(String name) {
         Pair pair = pairs.get(name);
         if (values != null && pair != null) {
@@ -65,6 +82,10 @@ public class FormController {
 		}
         this.values = data;
 	}
+
+    public void load(Bundle data) {
+        load((Bundle)null, data);
+    }
 
 	public void load(Bundle dialogArguments, Bundle data) {
 		Bundle values = new Bundle();
@@ -92,9 +113,16 @@ public class FormController {
 		loadValues(data);
 	}
 
-	public void save(Bundle data) {
+	public void save(Bundle data, String... names) {
+        List<String> namesSearch = new ArrayList<>();
+        if (null != names) {
+            Collections.addAll(namesSearch, names);
+        }
 		for (String name : pairs.keySet()) {
 			Pair pair = pairs.get(name);
+            if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
+                continue;
+            }
 			pair.viewAdapter.save(name, data);
 		}
 	}
@@ -106,6 +134,24 @@ public class FormController {
 		}
 		return (T) p.viewAdapter.getWidgetValue();
 	}
+
+    public boolean setOriginalValue(String name, Object value) {
+        Pair<Object> p = pairs.get(name);
+        if (null == p) {
+            return false;
+        }
+        originalValues.put(name, value);
+        return true;
+    }
+
+    public boolean setValue(String name, Object value) {
+        Pair<Object> p = pairs.get(name);
+        if (null == p) {
+            return false;
+        }
+        p.viewAdapter.setWidgetValue(value);
+        return true;
+    }
 
 	public <T extends WidgetBundleAdapter<?>> T getAdapter(String name, Class<T> cl) {
 		Pair p = pairs.get(name);
@@ -121,7 +167,7 @@ public class FormController {
 			Object value = pair.viewAdapter.getWidgetValue();
 			Object orig = originalValues.get(name);
 			if (null != value && null != orig && !value.equals(orig)) {
-                Log.i(TAG, "Load: " + name + " = " + orig + " - " + value);
+                logger.d("Changed: ", name, "=", orig, "-", value);
 				return true;
 			}
 		}
