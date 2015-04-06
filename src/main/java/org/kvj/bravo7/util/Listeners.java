@@ -56,4 +56,8 @@ public class Listeners<T> {
         }
         return true;
     }
+
+    public int size() {
+        return listeners.size();
+    }
 }
