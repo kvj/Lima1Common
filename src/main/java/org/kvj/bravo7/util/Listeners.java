@@ -22,6 +22,7 @@ public class Listeners<T> {
                 return false;
             }
             listeners.add(listener);
+            onAdd(listener);
             return true;
         }
     }
@@ -32,6 +33,7 @@ public class Listeners<T> {
                 return false;
             }
             listeners.remove(listener);
+            onRemove(listener);
             return true;
         }
     }
@@ -39,6 +41,9 @@ public class Listeners<T> {
     public boolean clear() {
         synchronized (lock) {
             if (!listeners.isEmpty()) {
+                for (T listener : listeners) { // $COMMENT
+                    onRemove(listener);
+                }
                 listeners.clear();
                 return true;
             }
@@ -60,4 +65,7 @@ public class Listeners<T> {
     public int size() {
         return listeners.size();
     }
+
+    protected void onAdd(T listener) {}
+    protected void onRemove(T listener) {}
 }
