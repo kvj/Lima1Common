@@ -56,8 +56,16 @@ public class Controller {
         return settings().getString(context.getString(name), def);
     }
 
+    public boolean settingsBoolean(int name, boolean def) {
+        return settings().getBoolean(context.getString(name), def);
+    }
+
     public void stringSettings(int name, String value) {
         settings().edit().putString(context.getString(name), value).apply();
+    }
+
+    public void booleanSettings(int name, boolean value) {
+        settings().edit().putBoolean(context.getString(name), value).apply();
     }
 
     public void arraySettings(int name, JSONArray value) {
