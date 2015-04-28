@@ -10,6 +10,9 @@ import org.json.JSONObject;
 import org.kvj.bravo7.log.AndroidLogger;
 import org.kvj.bravo7.log.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by kvorobyev on 4/8/15.
  */
@@ -26,6 +29,10 @@ public class Controller {
 
     public SharedPreferences settings() {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public SharedPreferences settings(String s) {
+        return context.getSharedPreferences(s, Context.MODE_PRIVATE);
     }
 
     public JSONObject settingsObject(int name, JSONObject def) {
@@ -75,8 +82,32 @@ public class Controller {
     public void objectSettings(int name, JSONObject value) {
         stringSettings(name, value.toString());
     }
+    public List<String> settingsList(int name) {
+        List<String> result = new ArrayList<String>();
+        String ids = settingsString(name, "");
+        String[] arr = ids.split(" ");
+        for (String id : arr) {
+            if (id != null && !"".equals(id)) {
+                result.add(id);
+            }
+        }
+        return result;
+    }
+
+    public void listSettings(int name, List<String> value) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : value) {
+            if (sb.length() > 0) {
+                sb.append(" ");
+            }
+            sb.append(s);
+        }
+        stringSettings(name, sb.toString());
+    }
+
 
     public Context context() {
         return context;
     }
+
 }
