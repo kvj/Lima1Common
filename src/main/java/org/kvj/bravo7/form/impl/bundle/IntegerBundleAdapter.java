@@ -1,10 +1,10 @@
 package org.kvj.bravo7.form.impl.bundle;
 
-import org.kvj.bravo7.form.BundleAdapter;
-
 import android.os.Bundle;
 
-public class IntegerBundleAdapter implements BundleAdapter<Integer> {
+import org.kvj.bravo7.form.BundleAdapter;
+
+public class IntegerBundleAdapter extends BundleAdapter<Integer> {
 
 	@Override
 	public Integer get(Bundle bundle, String name, Integer def) {

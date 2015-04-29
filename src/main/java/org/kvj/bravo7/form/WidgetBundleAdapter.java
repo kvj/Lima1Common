@@ -47,4 +47,8 @@ abstract public class WidgetBundleAdapter<T> {
 		this.controller = controller;
 	}
 
+
+	public BundleAdapter<T> adapter() {
+		return adapter;
+	}
 }

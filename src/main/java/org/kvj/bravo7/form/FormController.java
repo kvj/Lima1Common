@@ -15,10 +15,12 @@ import java.util.Map;
 
 public class FormController {
 
-    private Bundle values = null;
+	private static final String SAVE_MARK = "$$SAVE_MARK$$";
+	private Bundle values = null;
     private Logger logger = Logger.forInstance(this);
+	private boolean wasRestored = false;
 
-    public void setView(View view) {
+	public void setView(View view) {
         this.view = view;
     }
 
@@ -79,12 +81,14 @@ public class FormController {
 				// Log.i(TAG, "Load: " + name + " = " +
 				// pair.viewAdapter.get(name, data));
 			}
+			wasRestored = data.getBoolean(SAVE_MARK, false);
+			logger.d("Loading values from:", data, wasRestored);
 		}
         this.values = data;
 	}
 
     public void load(Bundle data) {
-        load((Bundle)null, data);
+        load((Bundle) null, data);
     }
 
 	public void load(Bundle dialogArguments, Bundle data) {
@@ -114,6 +118,10 @@ public class FormController {
 	}
 
 	public void save(Bundle data, String... names) {
+		save(data, false, names);
+	}
+
+	public void save(Bundle data, boolean forLoad, String... names) {
         List<String> namesSearch = new ArrayList<>();
         if (null != names) {
             Collections.addAll(namesSearch, names);
@@ -125,6 +133,9 @@ public class FormController {
             }
 			pair.viewAdapter.save(name, data);
 		}
+		if (!forLoad) {
+			data.putBoolean(SAVE_MARK, true);
+		}
 	}
 
 	public <T> T getValue(String name, Class<T> cl) {
@@ -135,7 +146,15 @@ public class FormController {
 		return (T) p.viewAdapter.getWidgetValue();
 	}
 
-    public boolean setOriginalValue(String name, Object value) {
+	public <T> T getValue(String name) {
+		Pair p = pairs.get(name);
+		if (null == p) {
+			return null;
+		}
+		return (T) p.viewAdapter.getWidgetValue();
+	}
+
+	public boolean setOriginalValue(String name, Object value) {
         Pair<Object> p = pairs.get(name);
         if (null == p) {
             return false;
@@ -162,15 +181,20 @@ public class FormController {
 	}
 
 	public boolean changed() {
+//		logger.d("changed:", originalValues);
 		for (String name : pairs.keySet()) {
 			Pair pair = pairs.get(name);
 			Object value = pair.viewAdapter.getWidgetValue();
 			Object orig = originalValues.get(name);
-			if (null != value && null != orig && !value.equals(orig)) {
-                logger.d("Changed: ", name, "=", orig, "-", value);
+			if (pair.viewAdapter.adapter().changed(orig, value)) {
+//                logger.d("Changed: ", name, "=", orig != null, "-", value != null);
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean wasRestored() {
+		return wasRestored;
 	}
 }

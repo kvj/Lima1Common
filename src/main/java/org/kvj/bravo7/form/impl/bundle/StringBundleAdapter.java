@@ -1,10 +1,10 @@
 package org.kvj.bravo7.form.impl.bundle;
 
-import org.kvj.bravo7.form.BundleAdapter;
-
 import android.os.Bundle;
 
-public class StringBundleAdapter implements BundleAdapter<String> {
+import org.kvj.bravo7.form.BundleAdapter;
+
+public class StringBundleAdapter extends BundleAdapter<String> {
 
 	@Override
 	public String get(Bundle bundle, String name, String def) {
