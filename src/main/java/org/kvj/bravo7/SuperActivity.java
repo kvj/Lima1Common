@@ -1,19 +1,19 @@
 package org.kvj.bravo7;
 
-import java.io.File;
-
-import org.kvj.bravo7.ControllerConnector.ControllerReceiver;
-
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
+
+import org.kvj.bravo7.ControllerConnector.ControllerReceiver;
+
+import java.io.File;
 
 public class SuperActivity<A extends ApplicationContext, T, S extends SuperService<T, A>> extends Activity implements
 		ControllerReceiver<T> {
