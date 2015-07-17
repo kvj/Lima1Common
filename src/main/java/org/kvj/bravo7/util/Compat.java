@@ -7,6 +7,10 @@ import android.os.Build;
  */
 public class Compat {
 
+    public interface Producer<T> {
+        public T produce();
+    }
+
     public static void levelAware(int level, Runnable after, Runnable before) {
         if(Build.VERSION.SDK_INT >= level) {
             if (null != after) after.run();
@@ -17,5 +21,15 @@ public class Compat {
 
     public static void levelAware(int level, Runnable after) {
         levelAware(level, after, null);
+    }
+
+    public static <T> T produceLevelAware(int level, Producer<T> after, Producer<T> before) {
+        T result = null;
+        if(Build.VERSION.SDK_INT >= level) {
+            if (null != after) result = after.produce();
+        } else {
+            if (null != before) result = before.produce();
+        }
+        return result;
     }
 }
