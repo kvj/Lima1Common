@@ -68,7 +68,7 @@ public class Configurator {
     public List<String> settingsList(int name) {
         List<String> result = new ArrayList<String>();
         String ids = settingsString(name, "");
-        String[] arr = ids.split(" ");
+        String[] arr = ids.split("\n");
         for (String id : arr) {
             if (id != null && !"".equals(id)) {
                 result.add(id);
@@ -81,7 +81,7 @@ public class Configurator {
         StringBuilder sb = new StringBuilder();
         for (String s : value) {
             if (sb.length() > 0) {
-                sb.append(" ");
+                sb.append("\n");
             }
             sb.append(s);
         }

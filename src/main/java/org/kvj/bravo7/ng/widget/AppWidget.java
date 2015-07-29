@@ -25,4 +25,13 @@ abstract public class AppWidget extends AppWidgetProvider {
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
+
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        AppWidgetController controller = AppWidgetController.instance(context);
+        for (int id : appWidgetIds) {
+            controller.remove(id);
+        }
+        super.onDeleted(context, appWidgetIds);
+    }
 }

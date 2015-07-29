@@ -1,16 +1,22 @@
 package org.kvj.bravo7.ng.widget;
 
 import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.appwidget.AppWidgetProviderInfo;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
+import org.kvj.bravo7.log.Logger;
 import org.kvj.bravo7.ng.conf.BundleConfigurable;
 import org.kvj.bravo7.ng.conf.Configurable;
+import org.kvj.bravo7.ng.conf.Configurator;
 import org.kvj.bravo7.ng.conf.SharedPreferencesConfigurable;
 import org.kvj.bravo7.util.Compat;
 
@@ -19,6 +25,7 @@ import org.kvj.bravo7.util.Compat;
  */
 public class AppWidgetController {
 
+    Logger logger = Logger.forInstance(this);
     private final AppWidgetManager manager;
     private final Context context;
 
@@ -31,38 +38,23 @@ public class AppWidgetController {
         return new AppWidgetController(context);
     }
 
-    public int[] ids(Class<AppWidgetProvider> providerClass) {
+    public int[] ids(Class<? extends AppWidgetProvider> providerClass) {
         return manager.getAppWidgetIds(new ComponentName(context, providerClass));
     }
 
-    public Configurable configurable(final int id) {
-        return Compat.produceLevelAware(Build.VERSION_CODES.JELLY_BEAN,
-                                        new Compat.Producer<Configurable>() {
-                                            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                                            @Override
-                                            public Configurable produce() {
-                                                return new BundleConfigurable(context, manager
-                                                    .getAppWidgetOptions(id));
-                                            }
-                                        }, new Compat.Producer<Configurable>() {
-                @Override
-                public Configurable produce() {
-                    return new SharedPreferencesConfigurable(context, PreferenceManager
-                        .getDefaultSharedPreferences(context));
-                }
-            });
+    public Configurator configurator(final int id) {
+        SharedPreferences pref = context.getSharedPreferences(widgetPrefName(id), Context.MODE_PRIVATE);
+        Configurable configurable = new SharedPreferencesConfigurable(context, pref);
+        return new Configurator(configurable);
+    }
+
+    String widgetPrefName(int id) {
+        return String.format("widget_config_%d", id);
     }
 
     public void save(final int id, final Configurable configurable) {
-        Compat.levelAware(Build.VERSION_CODES.JELLY_BEAN, new Runnable() {
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            @Override
-            public void run() {
-                manager.updateAppWidgetOptions(id, ((BundleConfigurable) configurable).bundle());
-            }
-        });
+        // No-op for now
     }
-
 
     public boolean update(int id, RemoteViews views) {
         if (null == views) return false;
@@ -70,12 +62,63 @@ public class AppWidgetController {
         return true;
     }
 
-    public boolean update(int id, AppWidget.AppWidgetUpdate update) {
+    public void notify(final int id, final int notifyID) {
+        Compat.levelAware(11, new Runnable() {
+            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+            @Override
+            public void run() {
+                manager.notifyAppWidgetViewDataChanged(id, notifyID);
+            }
+        });
+    }
+
+    public boolean update(final int id, AppWidget.AppWidgetUpdate update) {
         return update(id, update.update(this, id));
     }
 
     public RemoteViews create(int layout) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), layout);
         return rv;
+    }
+
+    public void remove(int id) {
+        // Clear config
+        logger.d("Removed widget:", id);
+        SharedPreferences pref = context.getSharedPreferences(widgetPrefName(id), Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = pref.edit().clear();
+        Compat.levelAware(9, new Runnable() {
+            @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+            @Override
+            public void run() {
+                editor.apply();
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                editor.commit();
+            }
+        });
+    }
+
+    public Intent configIntent(int id) {
+        AppWidgetProviderInfo info = manager.getAppWidgetInfo(id);
+        if (null == info || null == info.configure) {
+            return null;
+        }
+        Intent intent = new Intent();
+        intent.setComponent(info.configure);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+        intent.setAction("android.appwidget.action.APPWIDGET_CONFIGURE");
+        return intent;
+    }
+
+    public Intent remoteIntent(int id, Class<? extends AppWidgetRemote.AppWidgetRemoteService> svcClass) {
+        Intent intent = new Intent(context, svcClass);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+        return intent;
+    }
+
+    public PendingIntent configPendingIntent(int id) {
+        return PendingIntent.getActivity(context, 0, configIntent(id), PendingIntent.FLAG_CANCEL_CURRENT);
     }
 }
