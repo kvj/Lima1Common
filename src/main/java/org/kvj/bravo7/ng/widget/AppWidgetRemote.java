@@ -19,6 +19,8 @@ public class AppWidgetRemote {
 
     abstract public static class AppWidgetRemoteService extends RemoteViewsService {
 
+        protected Logger logger = Logger.forInstance(this);
+
         @Override
         public RemoteViewsService.RemoteViewsFactory onGetViewFactory(Intent intent) {
             return adapter().init(getApplicationContext(), intent);
@@ -36,7 +38,7 @@ public class AppWidgetRemote {
 
         protected AppWidgetRemoteAdapter init(Context context, Intent intent) {
             this.context = context;
-            this.id = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+            this.id = Integer.valueOf(intent.getData().getSchemeSpecificPart());
             this.controller = AppWidgetController.instance(context);
             return this;
         }

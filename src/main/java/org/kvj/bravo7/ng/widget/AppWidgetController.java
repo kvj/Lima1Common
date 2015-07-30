@@ -9,6 +9,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
@@ -114,11 +115,15 @@ public class AppWidgetController {
 
     public Intent remoteIntent(int id, Class<? extends AppWidgetRemote.AppWidgetRemoteService> svcClass) {
         Intent intent = new Intent(context, svcClass);
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
+        intent.setData(Uri.fromParts("content", String.valueOf(id), null));
         return intent;
     }
 
     public PendingIntent configPendingIntent(int id) {
         return PendingIntent.getActivity(context, 0, configIntent(id), PendingIntent.FLAG_CANCEL_CURRENT);
+    }
+
+    public String title(int id, AppWidget widget) {
+        return widget.title(this, id);
     }
 }

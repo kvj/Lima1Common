@@ -10,6 +10,10 @@ import android.widget.RemoteViews;
  */
 abstract public class AppWidget extends AppWidgetProvider {
 
+    public String title(AppWidgetController controller, int id) {
+        return String.format("Widget '%d'", id);
+    }
+
     public interface AppWidgetUpdate {
         public RemoteViews update(AppWidgetController controller, int id);
     }
