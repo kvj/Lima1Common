@@ -46,12 +46,20 @@ public class Configurator {
         return configurable.getString(name, def);
     }
 
+    public int settingsInt(int name, int def) {
+        return configurable.getInt(name, def);
+    }
+
     public boolean settingsBoolean(int name, boolean def) {
         return configurable.getBool(name, def);
     }
 
     public void stringSettings(int name, String value) {
         configurable.setString(name, value);
+    }
+
+    public void intSettings(int name, int value) {
+        configurable.setInt(name, value);
     }
 
     public void booleanSettings(int name, boolean value) {

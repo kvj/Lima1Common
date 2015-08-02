@@ -5,15 +5,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.kvj.bravo7.log.AndroidLogger;
 import org.kvj.bravo7.log.Logger;
 import org.kvj.bravo7.ng.conf.Configurator;
 import org.kvj.bravo7.ng.conf.SharedPreferencesConfigurable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by kvorobyev on 4/8/15.
@@ -34,6 +29,9 @@ public class Controller {
     }
 
     public SharedPreferences preferences(String s) {
+        if (TextUtils.isEmpty(s)) { // Use app level
+            return PreferenceManager.getDefaultSharedPreferences(context);
+        }
         return context.getSharedPreferences(s, Context.MODE_PRIVATE);
     }
 
