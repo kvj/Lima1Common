@@ -7,7 +7,7 @@ import android.util.Log;
  */
 public class Logger {
 
-    public enum LoggerLevel {Debug, Info, Warning, Error};
+    public enum LoggerLevel {Debug, Info, Warning, level, Error};
 
     public static interface LoggerOutput {
         public boolean output(Logger logger, LoggerLevel level, Throwable e, String line);
@@ -60,6 +60,14 @@ public class Logger {
             }
         }
         return sb.toString();
+    }
+
+    public String log(LoggerLevel level, Object... data) {
+        String str = log(data, 0);
+        if (null != output) {
+            output.output(this, level, null, str);
+        }
+        return str;
     }
 
     public String d(Object... data) {
