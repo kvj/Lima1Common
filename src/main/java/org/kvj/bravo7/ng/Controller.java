@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,4 +46,8 @@ public class Controller {
         return context;
     }
 
+    public void messageShort(String message) {
+        logger.w("Toast:", message);
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
 }
