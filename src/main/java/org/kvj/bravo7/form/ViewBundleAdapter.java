@@ -9,7 +9,7 @@ public abstract class ViewBundleAdapter<V extends View, T> extends WidgetBundleA
 
 	public V getView() {
 		if (null == view) {
-			view = (V) controller.view.findViewById(resID);
+			view = (V) controller.viewFinder.findViewById(resID);
 		}
 		return view;
 	}

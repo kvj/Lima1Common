@@ -2,11 +2,12 @@ package org.kvj.bravo7.form;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.view.View;
 
+import org.kvj.bravo7.form.impl.ViewFinder;
 import org.kvj.bravo7.log.Logger;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -20,10 +21,6 @@ public class FormController {
     private Logger logger = Logger.forInstance(this);
 	private boolean wasRestored = false;
 
-	public void setView(View view) {
-        this.view = view;
-    }
-
     class Pair<T> {
 		WidgetBundleAdapter<T> viewAdapter;
 	}
@@ -32,10 +29,10 @@ public class FormController {
 
 	private Map<String, Pair> pairs = new LinkedHashMap<String, Pair>();
 	private Map<String, Object> originalValues = new HashMap<String, Object>();
-	protected View view;
+	protected final ViewFinder viewFinder;
 
-	public FormController(View view) {
-		this.view = view;
+	public FormController(ViewFinder viewFinder) {
+		this.viewFinder = viewFinder;
 	}
 
 	public <V, T> void add(WidgetBundleAdapter<T> viewAdapter, String name) {
@@ -196,5 +193,25 @@ public class FormController {
 
 	public boolean wasRestored() {
 		return wasRestored;
+	}
+
+	public Collection<String> changes(String... names) {
+		List<String> result = new ArrayList<>();
+		List<String> namesSearch = new ArrayList<>();
+		if (null != names) {
+			Collections.addAll(namesSearch, names);
+		}
+		for (String name : pairs.keySet()) {
+			Pair pair = pairs.get(name);
+			if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
+				continue;
+			}
+			Object value = pair.viewAdapter.getWidgetValue();
+			Object orig = originalValues.get(name);
+			if (pair.viewAdapter.adapter().changed(orig, value)) {
+				result.add(name);
+			}
+		}
+		return result;
 	}
 }

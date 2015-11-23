@@ -17,6 +17,9 @@ public class Listeners<T> {
     private final Object lock = new Object();
 
     public boolean add(T listener) {
+        if (null == listener) {
+            return false;
+        }
         synchronized (lock) {
             if (listeners.contains(listener)) { // Already there
                 return false;
@@ -28,6 +31,9 @@ public class Listeners<T> {
     }
 
     public boolean remove(T listener) {
+        if (null == listener) {
+            return true;
+        }
         synchronized (lock) {
             if (!listeners.contains(listener)) { // There
                 return false;
