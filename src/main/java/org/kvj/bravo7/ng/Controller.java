@@ -1,8 +1,10 @@
 package org.kvj.bravo7.ng;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import org.kvj.bravo7.log.AndroidLogger;
@@ -48,5 +50,21 @@ public class Controller {
     public void messageLong(String message) {
         logger.w("Toast:", message);
         Toast.makeText(context, message, Toast.LENGTH_LONG).show();
+    }
+
+    public void question(Context context, String message, final Runnable yesHandler, final Runnable noHandler) {
+        new AlertDialog.Builder(context)
+            .setMessage(message)
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (null != yesHandler) yesHandler.run();
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (null != noHandler) noHandler.run();
+            }
+        }).show();
     }
 }

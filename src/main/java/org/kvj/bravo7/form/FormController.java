@@ -16,42 +16,41 @@ import java.util.Map;
 
 public class FormController {
 
-	private static final String SAVE_MARK = "$$SAVE_MARK$$";
-	private Bundle values = null;
+    private static final String SAVE_MARK = "$$SAVE_MARK$$";
+    private Bundle values = null;
     private Logger logger = Logger.forInstance(this);
-	private boolean wasRestored = false;
+    private boolean wasRestored = false;
 
     class Pair<T> {
-		WidgetBundleAdapter<T> viewAdapter;
-	}
 
-	private static final String TAG = "Form";
+        WidgetBundleAdapter<T> viewAdapter;
+    }
 
-	private Map<String, Pair> pairs = new LinkedHashMap<String, Pair>();
-	private Map<String, Object> originalValues = new HashMap<String, Object>();
-	protected final ViewFinder viewFinder;
+    private static final String TAG = "Form";
 
-	public FormController(ViewFinder viewFinder) {
-		this.viewFinder = viewFinder;
-	}
+    private Map<String, Pair> pairs = new LinkedHashMap<String, Pair>();
+    private Map<String, Object> originalValues = new HashMap<String, Object>();
+    protected final ViewFinder viewFinder;
 
-	public <V, T> void add(WidgetBundleAdapter<T> viewAdapter, String name) {
-		Pair pair = new Pair();
-		pair.viewAdapter = viewAdapter;
-		pairs.put(name, pair);
-		viewAdapter.key = name;
-		viewAdapter.setController(this);
-	}
+    public FormController(ViewFinder viewFinder) {
+        this.viewFinder = viewFinder;
+    }
 
-	private void loadDefaultValues(Bundle values) {
-		originalValues.clear();
-		for (String name : pairs.keySet()) {
-			Pair pair = pairs.get(name);
-			originalValues.put(name, pair.viewAdapter.get(name, values));
-			// Log.i(TAG, "Load origins: " + name + " = " +
-			// pair.viewAdapter.get(name, values));
-		}
-	}
+    public <V, T> void add(WidgetBundleAdapter<T> viewAdapter, String name) {
+        Pair pair = new Pair();
+        pair.viewAdapter = viewAdapter;
+        pairs.put(name, pair);
+        viewAdapter.key = name;
+        viewAdapter.setController(this);
+    }
+
+    private void loadDefaultValues(Bundle values, List<String> namesSearch) {
+        for (String name : pairs.keySet()) {
+            if (!namesSearch.contains(name)) continue;
+            Pair pair = pairs.get(name);
+            originalValues.put(name, pair.viewAdapter.get(name, values));
+        }
+    }
 
     public void setAsOriginal() {
         originalValues.clear();
@@ -70,88 +69,78 @@ public class FormController {
         return false;
     }
 
-	private void loadValues(Bundle data) {
-		if (null != data) {
-			for (String name : pairs.keySet()) {
-				Pair pair = pairs.get(name);
-				pair.viewAdapter.restore(name, data);
-				// Log.i(TAG, "Load: " + name + " = " +
-				// pair.viewAdapter.get(name, data));
-			}
-			wasRestored = data.getBoolean(SAVE_MARK, false);
-			logger.d("Loading values from:", data, wasRestored);
-		}
+    private void loadValues(Bundle data, List<String> namesSearch) {
+        if (null != data) {
+            for (String name : pairs.keySet()) {
+                Pair pair = pairs.get(name);
+                if (!namesSearch.contains(name)) continue;
+                pair.viewAdapter.restore(name, data);
+                // Log.i(TAG, "Load: " + name + " = " +
+                // pair.viewAdapter.get(name, data));
+            }
+            wasRestored = data.getBoolean(SAVE_MARK, false);
+            logger.d("Loading values from:", data, wasRestored);
+        }
         this.values = data;
-	}
-
-    public void load(Bundle data) {
-        load((Bundle) null, data);
     }
 
-	public void load(Bundle dialogArguments, Bundle data) {
-		Bundle values = new Bundle();
-		if (null != dialogArguments) {
-			values = dialogArguments;
-		}
-		loadDefaultValues(values);
-		if (null == data) {
-			data = values;
-		}
-		// Set values to views
-		loadValues(data);
-	}
+    public void load(Activity activity, Bundle data, String... names) {
+        List<String> namesSearch = new ArrayList<>();
+        if (null != names && names.length > 0) {
+            Collections.addAll(namesSearch, names);
+        } else {
+            namesSearch.addAll(pairs.keySet());
+        }
+        Bundle values = new Bundle();
+        if (null != activity.getIntent() && null != activity.getIntent().getExtras()) {
+            values = activity.getIntent().getExtras();
+        }
+        loadDefaultValues(values, namesSearch);
+        if (null == data) {
+            data = values;
+        }
+        // Set values to views
+        loadValues(data, namesSearch);
+    }
 
-	public void load(Activity activity, Bundle data) {
-		Bundle values = new Bundle();
-		if (null != activity.getIntent() && null != activity.getIntent().getExtras()) {
-			values = activity.getIntent().getExtras();
-		}
-		loadDefaultValues(values);
-		if (null == data) {
-			data = values;
-		}
-		// Set values to views
-		loadValues(data);
-	}
+    public void save(Bundle data, String... names) {
+        save(data, false, names);
+    }
 
-	public void save(Bundle data, String... names) {
-		save(data, false, names);
-	}
-
-	public void save(Bundle data, boolean forLoad, String... names) {
+    public void save(Bundle data, boolean forLoad, String... names) {
         List<String> namesSearch = new ArrayList<>();
         if (null != names) {
             Collections.addAll(namesSearch, names);
         }
-		for (String name : pairs.keySet()) {
-			Pair pair = pairs.get(name);
+        for (String name : pairs.keySet()) {
+            Pair pair = pairs.get(name);
             if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
                 continue;
             }
-			pair.viewAdapter.save(name, data);
-		}
-		if (!forLoad) {
-			data.putBoolean(SAVE_MARK, true);
-		}
-	}
+            pair.viewAdapter.save(name, data);
+        }
+        if (!forLoad) {
+            data.putBoolean(SAVE_MARK, true);
+        }
+    }
 
-	public <T> T getValue(String name, Class<T> cl) {
-		Pair p = pairs.get(name);
-		if (null == p) {
-			return null;
-		}
-		return (T) p.viewAdapter.getWidgetValue();
-	}
+    public <T> T getValue(String name, Class<T> cl) {
+        Pair p = pairs.get(name);
+        if (null == p) {
+            return null;
+        }
+        return (T) p.viewAdapter.getWidgetValue();
+    }
 
-	public <T> T getValue(String name) {
-		Pair p = pairs.get(name);
-		if (null == p) {
-			return null;
-		}
-		return (T) p.viewAdapter.getWidgetValue();
-	}
+    public <T> T getValue(String name) {
+        Pair p = pairs.get(name);
+        if (null == p) {
+            return null;
+        }
+        return (T) p.viewAdapter.getWidgetValue();
+    }
 
-	public boolean setOriginalValue(String name, Object value) {
+    public boolean setOriginalValue(String name, Object value) {
         Pair<Object> p = pairs.get(name);
         if (null == p) {
             return false;
@@ -169,49 +158,49 @@ public class FormController {
         return true;
     }
 
-	public <T extends WidgetBundleAdapter<?>> T getAdapter(String name, Class<T> cl) {
-		Pair p = pairs.get(name);
-		if (null == p) {
-			return null;
-		}
-		return (T) p.viewAdapter;
-	}
+    public <T extends WidgetBundleAdapter<?>> T getAdapter(String name, Class<T> cl) {
+        Pair p = pairs.get(name);
+        if (null == p) {
+            return null;
+        }
+        return (T) p.viewAdapter;
+    }
 
-	public boolean changed() {
+    public boolean changed() {
 //		logger.d("changed:", originalValues);
-		for (String name : pairs.keySet()) {
-			Pair pair = pairs.get(name);
-			Object value = pair.viewAdapter.getWidgetValue();
-			Object orig = originalValues.get(name);
-			if (pair.viewAdapter.adapter().changed(orig, value)) {
+        for (String name : pairs.keySet()) {
+            Pair pair = pairs.get(name);
+            Object value = pair.viewAdapter.getWidgetValue();
+            Object orig = originalValues.get(name);
+            if (pair.viewAdapter.adapter().changed(orig, value)) {
 //                logger.d("Changed: ", name, "=", orig != null, "-", value != null);
-				return true;
-			}
-		}
-		return false;
-	}
+                return true;
+            }
+        }
+        return false;
+    }
 
-	public boolean wasRestored() {
-		return wasRestored;
-	}
+    public boolean wasRestored() {
+        return wasRestored;
+    }
 
-	public Collection<String> changes(String... names) {
-		List<String> result = new ArrayList<>();
-		List<String> namesSearch = new ArrayList<>();
-		if (null != names) {
-			Collections.addAll(namesSearch, names);
-		}
-		for (String name : pairs.keySet()) {
-			Pair pair = pairs.get(name);
-			if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
-				continue;
-			}
-			Object value = pair.viewAdapter.getWidgetValue();
-			Object orig = originalValues.get(name);
-			if (pair.viewAdapter.adapter().changed(orig, value)) {
-				result.add(name);
-			}
-		}
-		return result;
-	}
+    public Collection<String> changes(String... names) {
+        List<String> result = new ArrayList<>();
+        List<String> namesSearch = new ArrayList<>();
+        if (null != names) {
+            Collections.addAll(namesSearch, names);
+        }
+        for (String name : pairs.keySet()) {
+            Pair pair = pairs.get(name);
+            if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
+                continue;
+            }
+            Object value = pair.viewAdapter.getWidgetValue();
+            Object orig = originalValues.get(name);
+            if (pair.viewAdapter.adapter().changed(orig, value)) {
+                result.add(name);
+            }
+        }
+        return result;
+    }
 }
