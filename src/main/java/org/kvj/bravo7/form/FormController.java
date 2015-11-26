@@ -2,6 +2,7 @@ package org.kvj.bravo7.form;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
 
 import org.kvj.bravo7.form.impl.ViewFinder;
 import org.kvj.bravo7.log.Logger;
@@ -20,6 +21,10 @@ public class FormController {
     private Bundle values = null;
     private Logger logger = Logger.forInstance(this);
     private boolean wasRestored = false;
+
+    public View getView(String key) {
+        return getAdapter(key, ViewBundleAdapter.class).getView();
+    }
 
     class Pair<T> {
 
