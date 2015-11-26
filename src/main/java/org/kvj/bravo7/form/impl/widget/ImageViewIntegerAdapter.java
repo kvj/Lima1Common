@@ -17,7 +17,7 @@ public class ImageViewIntegerAdapter extends ViewBundleAdapter<ImageView, Intege
     private final int drawableOff;
     private boolean checked = false;
 
-    public ImageViewIntegerAdapter(int res, int drawableOn, int drawableOff, Integer def) {
+    public ImageViewIntegerAdapter(int res, int drawableOff, int drawableOn, Integer def) {
         super(new IntegerBundleAdapter(), res, def);
         this.drawableOn = drawableOn;
         this.drawableOff = drawableOff;
@@ -31,7 +31,7 @@ public class ImageViewIntegerAdapter extends ViewBundleAdapter<ImageView, Intege
     @Override
     public void setWidgetValue(Integer value, Bundle bundle) {
         checked = value > 0;
-        logger.d("Set image value:", value, checked, drawableOn, drawableOff);
+//        logger.d("Set image value:", value, checked, drawableOn, drawableOff);
         getView().setImageResource(checked? drawableOn: drawableOff);
         getView().setOnClickListener(this);
     }
@@ -39,7 +39,7 @@ public class ImageViewIntegerAdapter extends ViewBundleAdapter<ImageView, Intege
     @Override
     public void onClick(View v) {
         checked = !checked;
-        logger.d("Click image value:", checked);
-//        getView().setImageResource(checked? drawableOn: drawableOff);
+//        logger.d("Click image value:", checked);
+        getView().setImageResource(checked? drawableOn: drawableOff);
     }
 }
