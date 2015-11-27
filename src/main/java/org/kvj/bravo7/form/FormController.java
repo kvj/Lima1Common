@@ -22,8 +22,12 @@ public class FormController {
     private Logger logger = Logger.forInstance(this);
     private boolean wasRestored = false;
 
-    public View getView(String key) {
-        return getAdapter(key, ViewBundleAdapter.class).getView();
+    public <T extends View> T getView(String key) {
+        return (T)getAdapter(key, ViewBundleAdapter.class).getView();
+    }
+
+    public <T extends View> T getView(String key, Class<T> cl) {
+        return (T)getAdapter(key, ViewBundleAdapter.class).getView();
     }
 
     class Pair<T> {
