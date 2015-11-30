@@ -6,7 +6,6 @@ public abstract class ViewBundleAdapter<V extends View, T> extends WidgetBundleA
 
     V view = null;
     protected int resID;
-
     public V getView() {
         if (null == view) {
             view = (V) controller.viewFinder.findViewById(resID);
@@ -18,4 +17,5 @@ public abstract class ViewBundleAdapter<V extends View, T> extends WidgetBundleA
         super(adapter, def);
         this.resID = resID;
     }
+
 }

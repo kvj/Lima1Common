@@ -149,21 +149,20 @@ public class FormController {
         return (T) p.viewAdapter.getWidgetValue();
     }
 
-    public boolean setOriginalValue(String name, Object value) {
-        Pair<Object> p = pairs.get(name);
-        if (null == p) {
-            return false;
-        }
-        originalValues.put(name, value);
-        return true;
+    public boolean setValue(String name, Object value) {
+        return setValue(name, value, false);
     }
 
-    public boolean setValue(String name, Object value) {
+    public boolean setValue(String name, Object value, boolean asOriginal) {
         Pair<Object> p = pairs.get(name);
         if (null == p) {
             return false;
         }
         p.viewAdapter.setWidgetValue(value);
+        if (asOriginal) {
+            originalValues.put(name, value);
+            p.viewAdapter.asOriginal(value);
+        }
         return true;
     }
 
@@ -176,12 +175,12 @@ public class FormController {
     }
 
     public boolean changed() {
-//		logger.d("changed:", originalValues);
+//        logger.d("changed:", originalValues);
         for (String name : pairs.keySet()) {
             Pair pair = pairs.get(name);
             Object value = pair.viewAdapter.getWidgetValue();
             Object orig = originalValues.get(name);
-            if (pair.viewAdapter.adapter().changed(orig, value)) {
+            if (pair.viewAdapter.changed(orig, value)) {
 //                logger.d("Changed: ", name, "=", orig != null, "-", value != null);
                 return true;
             }

@@ -5,11 +5,11 @@ package org.kvj.bravo7.util;
  */
 public class DataUtil {
 
-    public static class Wrapper<T> {
+    public static class Value<T> {
 
         private T data = null;
 
-        public Wrapper(T data) {
+        public Value(T data) {
             this.data = data;
         }
 
@@ -20,5 +20,14 @@ public class DataUtil {
         public void data(T data) {
             this.data = data;
         }
+
+        public boolean set() {
+            return data != null;
+        }
+    }
+
+    public interface Callback<T> {
+
+        public boolean call(T value);
     }
 }
