@@ -1,5 +1,6 @@
 package org.kvj.bravo7.ng;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -8,12 +9,16 @@ import android.content.SharedPreferences;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.kvj.bravo7.log.AndroidLogger;
 import org.kvj.bravo7.log.Logger;
 import org.kvj.bravo7.ng.conf.Configurator;
 import org.kvj.bravo7.ng.conf.SharedPreferencesConfigurable;
+import org.kvj.bravo7.util.DataUtil;
 
 import java.util.Date;
 
@@ -89,5 +94,31 @@ public class Controller {
     public void scheduleAlarm(Date when, PendingIntent intent) {
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, when.getTime(), intent);
+    }
+
+    public void input(Context context, String message, String value, final DataUtil.Callback<CharSequence> yesHandler,
+                      final DataUtil.Callback<CharSequence> noHandler) {
+        final EditText input = new EditText(context);
+        input.setSingleLine();
+        if (!TextUtils.isEmpty(value)) {
+            input.setText(value);
+        }
+        new AlertDialog.Builder(context)
+            .setView(input)
+            .setTitle(message)
+            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (null != yesHandler)
+                        yesHandler.call(input.getText());
+                }
+            }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (null != noHandler) noHandler.call(input.getText());
+            }
+        }).show();
+        input.selectAll();
+        input.requestFocus();
     }
 }
