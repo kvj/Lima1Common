@@ -93,7 +93,7 @@ public class FormController {
         this.values = data;
     }
 
-    public void load(Activity activity, Bundle data, String... names) {
+    public Bundle load(Activity activity, Bundle data, String... names) {
         List<String> namesSearch = new ArrayList<>();
         if (null != names && names.length > 0) {
             Collections.addAll(namesSearch, names);
@@ -101,8 +101,13 @@ public class FormController {
             namesSearch.addAll(pairs.keySet());
         }
         Bundle values = new Bundle();
-        if (null != activity.getIntent() && null != activity.getIntent().getExtras()) {
-            values = activity.getIntent().getExtras();
+        if (null == activity) {
+            // already loaded by activity
+            values = data;
+        } else {
+            if (null != activity.getIntent() && null != activity.getIntent().getExtras()) {
+                values = activity.getIntent().getExtras();
+            }
         }
         loadDefaultValues(values, namesSearch);
         if (null == data) {
@@ -110,6 +115,7 @@ public class FormController {
         }
         // Set values to views
         loadValues(data, namesSearch);
+        return data;
     }
 
     public void save(Bundle data, String... names) {

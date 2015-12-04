@@ -7,7 +7,7 @@ import android.os.Bundle;
 
 public class TransientAdapter<T> extends WidgetBundleAdapter<T> {
 
-	private T value;
+	protected T value;
 
 	public TransientAdapter(BundleAdapter<T> adapter, T def) {
 		super(adapter, def);
