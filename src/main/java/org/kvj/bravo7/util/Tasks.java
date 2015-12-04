@@ -1,5 +1,6 @@
 package org.kvj.bravo7.util;
 
+import android.app.Activity;
 import android.os.AsyncTask;
 
 /**
@@ -18,6 +19,30 @@ public class Tasks {
 
         public SimpleTask<T> exec() {
             return (SimpleTask<T>) this.execute();
+        }
+    }
+
+    abstract public static class ActivitySimpleTask<T> extends SimpleTask<T> {
+
+        private final Activity activity;
+
+        public ActivitySimpleTask(Activity a) {
+            this.activity = a;
+        }
+
+        abstract public void finish(T result);
+
+        @Override
+        protected void onPostExecute(final T t) {
+            super.onPostExecute(t);
+            if (null != activity) { // Valid activity
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        finish(t);
+                    }
+                });
+            }
         }
     }
 

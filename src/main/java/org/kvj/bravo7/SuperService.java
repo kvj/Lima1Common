@@ -85,14 +85,7 @@ public abstract class SuperService<T, A extends ApplicationContext> extends
 
 	public void raiseNotification(int icon, String text,
 			Class<? extends Activity> received) {
-		notification.icon = icon;
-		notification.when = new Date().getTime();
-		notification.tickerText = text;
-		notification.setLatestEventInfo(getApplicationContext(), title, text,
-				PendingIntent.getActivity(getApplicationContext(), 0,
-						new Intent(getApplicationContext(), received),
-						PendingIntent.FLAG_CANCEL_CURRENT));
-		startForeground(notificationID, notification);
+	    throw new RuntimeException("Not supported anymore");
 	}
 
 	public void raiseNotification(int icon, RemoteViews views,

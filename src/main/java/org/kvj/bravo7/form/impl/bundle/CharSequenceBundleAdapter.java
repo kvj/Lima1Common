@@ -28,9 +28,7 @@ public class CharSequenceBundleAdapter extends BundleAdapter<CharSequence> {
     }
 
     @Override
-    public boolean changed(Object orig, Object value) {
-        CharSequence cs1 = (CharSequence) orig;
-        CharSequence cs2 = (CharSequence) value;
+    public boolean changed(CharSequence cs1, CharSequence cs2) {
         boolean emp1 = TextUtils.isEmpty(cs1);
         boolean emp2 = TextUtils.isEmpty(cs2);
 //        logger.d("Changed?", emp1, emp2);
@@ -38,7 +36,7 @@ public class CharSequenceBundleAdapter extends BundleAdapter<CharSequence> {
             return false;
         }
         if (!emp1 && !emp2) { // Compare two not empty string
-//            logger.d("Changed?", cs1.toString().equals(cs2.toString()), cs1, cs2);
+//            logger.d("Changed?", cs1.toString().equals(cs2.toString()), cs1.length(), cs2.length());
             return !cs1.toString().equals(cs2.toString());
         }
         return true;

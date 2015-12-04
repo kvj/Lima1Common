@@ -14,10 +14,10 @@ repositories {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion '19.1'
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:+'
+    compile 'com.android.support:appcompat-v7:23.1.1'
 }

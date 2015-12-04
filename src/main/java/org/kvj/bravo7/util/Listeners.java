@@ -17,17 +17,30 @@ public class Listeners<T> {
     private final Object lock = new Object();
 
     public boolean add(T listener) {
+        return add(listener, false);
+    }
+
+    public boolean add(T listener, boolean top) {
+        if (null == listener) {
+            return false;
+        }
         synchronized (lock) {
             if (listeners.contains(listener)) { // Already there
                 return false;
             }
-            listeners.add(listener);
+            if (top)
+                listeners.add(0, listener);
+            else
+                listeners.add(listener);
             onAdd(listener);
             return true;
         }
     }
 
     public boolean remove(T listener) {
+        if (null == listener) {
+            return true;
+        }
         synchronized (lock) {
             if (!listeners.contains(listener)) { // There
                 return false;
