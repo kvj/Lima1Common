@@ -1,10 +1,12 @@
 package org.kvj.bravo7.ng;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
@@ -16,6 +18,7 @@ import org.kvj.bravo7.log.AndroidLogger;
 import org.kvj.bravo7.log.Logger;
 import org.kvj.bravo7.ng.conf.Configurator;
 import org.kvj.bravo7.ng.conf.SharedPreferencesConfigurable;
+import org.kvj.bravo7.util.Compat;
 import org.kvj.bravo7.util.DataUtil;
 
 import java.util.Date;
@@ -33,6 +36,8 @@ public class Controller {
         Logger.setOutput(new AndroidLogger(name));
         this.context = context;
     }
+
+    protected void init() {}
 
     public Configurator settings() {
         return new Configurator(new SharedPreferencesConfigurable(context, PreferenceManager.getDefaultSharedPreferences(context)));
@@ -92,9 +97,20 @@ public class Controller {
         alarmManager.cancel(intent);
     }
 
-    public void scheduleAlarm(Date when, PendingIntent intent) {
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, when.getTime(), intent);
+    public void scheduleAlarm(final Date when, final PendingIntent intent) {
+        final AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Compat.levelAware(Build.VERSION_CODES.KITKAT, new Runnable() {
+            @TargetApi(Build.VERSION_CODES.KITKAT)
+            @Override
+            public void run() {
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, when.getTime(), intent);
+            }
+        }, new Runnable() {
+            @Override
+            public void run() {
+                alarmManager.set(AlarmManager.RTC_WAKEUP, when.getTime(), intent);
+            }
+        });
     }
 
     public void input(Context context, String message, String value, final DataUtil.Callback<CharSequence> yesHandler,

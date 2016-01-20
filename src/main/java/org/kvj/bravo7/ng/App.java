@@ -21,6 +21,7 @@ abstract public class App<C extends Controller> extends Application {
         super.onCreate();
         controller = create();
         init();
+        controller.init();
     }
 
     public static App app() {
