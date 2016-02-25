@@ -13,6 +13,7 @@ abstract public class WidgetBundleAdapter<T> {
     protected FormController controller = null;
     protected String key = null;
     protected Logger logger = Logger.forInstance(this);
+    private boolean oneShot = false;
 
     public WidgetBundleAdapter(BundleAdapter<T> adapter, T def) {
         this.defaultValue = def;
@@ -82,5 +83,14 @@ abstract public class WidgetBundleAdapter<T> {
         if (trackOrigin) {
             originalValue = value;
         }
+    }
+
+    public WidgetBundleAdapter<T> oneShot() {
+        this.oneShot = true;
+        return this;
+    }
+
+    public boolean oneShow() {
+        return oneShot;
     }
 }
