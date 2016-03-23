@@ -11,11 +11,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.widget.RemoteViews;
 
 import org.kvj.bravo7.log.Logger;
-import org.kvj.bravo7.ng.conf.BundleConfigurable;
 import org.kvj.bravo7.ng.conf.Configurable;
 import org.kvj.bravo7.ng.conf.Configurator;
 import org.kvj.bravo7.ng.conf.SharedPreferencesConfigurable;
@@ -77,6 +75,14 @@ public class AppWidgetController {
         return update(id, update.update(this, id));
     }
 
+    public boolean updateAll(AppWidget update) {
+        int[] ids = ids(update.getClass());
+        for (int id : ids) { // Update every widget
+            update(id, update.updater());
+        }
+        return true;
+    }
+
     public RemoteViews create(int layout) {
         RemoteViews rv = new RemoteViews(context.getPackageName(), layout);
         return rv;
@@ -117,6 +123,12 @@ public class AppWidgetController {
         Intent intent = new Intent(context, svcClass);
         intent.setData(Uri.fromParts("content", String.valueOf(id), null));
         return intent;
+    }
+
+    public PendingIntent refreshPendingIntent(int id, Class<? extends AppWidgetRemote.AppWidgetRemoteService> svcClass) {
+        Intent intent = remoteIntent(id, svcClass);
+        intent.putExtra("action", "refresh");
+        return PendingIntent.getService(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
     }
 
     public PendingIntent configPendingIntent(int id) {
