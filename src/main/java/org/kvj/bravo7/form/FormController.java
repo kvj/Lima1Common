@@ -132,6 +132,9 @@ public class FormController {
             if (!namesSearch.isEmpty() && !namesSearch.contains(name)) { // Names mode - ignore
                 continue;
             }
+            if (pair.viewAdapter.oneShow()) {
+                continue;
+            }
             pair.viewAdapter.save(name, data);
         }
         if (!forLoad) {
