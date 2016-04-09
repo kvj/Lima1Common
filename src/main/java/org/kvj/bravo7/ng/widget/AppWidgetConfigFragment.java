@@ -31,7 +31,12 @@ public class AppWidgetConfigFragment extends PreferenceFragment {
             // Has been set
             getPreferenceManager().setSharedPreferencesName(pref);
             addPreferencesFromResource(xml);
+            onCreated();
         }
+    }
+
+    public void onCreated() {
+
     }
 
 }

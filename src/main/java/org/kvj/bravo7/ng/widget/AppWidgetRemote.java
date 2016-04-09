@@ -2,7 +2,6 @@ package org.kvj.bravo7.ng.widget;
 
 import android.annotation.TargetApi;
 import android.appwidget.AppWidgetManager;
-import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -17,7 +16,7 @@ import org.kvj.bravo7.log.Logger;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class AppWidgetRemote {
 
-    abstract public static class AppWidgetRemoteService extends RemoteViewsService {
+    abstract public static class AppWidgetRemoteService<T extends AppWidget.AppWidgetUpdate> extends RemoteViewsService {
 
         protected Logger logger = Logger.forInstance(this);
 
@@ -27,6 +26,19 @@ public class AppWidgetRemote {
         }
 
         abstract protected AppWidgetRemoteAdapter adapter();
+
+        abstract protected T widgetUpdate();
+
+        @Override
+        public int onStartCommand(Intent intent, int flags, int startId) {
+            if ("refresh".equals(intent.getStringExtra("action"))) { //
+                int id = Integer.valueOf(intent.getData().getSchemeSpecificPart());
+                AppWidgetController controller = AppWidgetController.instance(this);
+                controller.update(id, widgetUpdate());
+                return START_NOT_STICKY;
+            }
+            return super.onStartCommand(intent, flags, startId);
+        }
     }
 
     abstract public static class AppWidgetRemoteAdapter implements RemoteViewsService.RemoteViewsFactory {

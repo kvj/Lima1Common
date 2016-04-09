@@ -5,9 +5,10 @@ import android.appwidget.AppWidgetManager;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
+import org.kvj.bravo7.R;
 import org.kvj.bravo7.log.Logger;
 
 /**
@@ -17,14 +18,33 @@ import org.kvj.bravo7.log.Logger;
 abstract public class AppWidgetConfigActivity extends AppCompatActivity {
 
     Logger logger = Logger.forInstance(this);
+    protected AppWidgetConfigFragment fragment = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppWidgetConfigFragment fragment = new AppWidgetConfigFragment();
+        setContentView(R.layout.activity_appwidget_config);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.lima1_toolbar);
+        toolbar.setSubtitle(toolbarSubTitle());
+        setSupportActionBar(toolbar);
+        this.fragment = new AppWidgetConfigFragment() {
+            @Override
+            public void onCreated() {
+                super.onCreated();
+                onPreferencesLoaded();
+            }
+        };
         logger.d("Configuring:", id(), preferenceXML());
         fragment.preferenceXML(AppWidgetController.instance(this).widgetPrefName(id()), preferenceXML());
-        getFragmentManager().beginTransaction().replace(android.R.id.content, fragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.lima1_appwidget_root, fragment).commit();
+    }
+
+    protected void onPreferencesLoaded() {
+
+    }
+
+    protected String toolbarSubTitle() {
+        return "";
     }
 
     protected int id() {
