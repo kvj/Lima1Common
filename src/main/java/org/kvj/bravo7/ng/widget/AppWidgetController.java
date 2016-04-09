@@ -138,4 +138,8 @@ public class AppWidgetController {
     public String title(int id, AppWidget widget) {
         return widget.title(this, id);
     }
+
+    public PendingIntent activityPending(Intent launchIntent) {
+        return PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+    }
 }
