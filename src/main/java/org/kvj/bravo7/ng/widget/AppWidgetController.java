@@ -113,13 +113,14 @@ public class AppWidgetController {
             return null;
         }
         Intent intent = new Intent();
+        intent.setData(Uri.fromParts("content", String.valueOf(id), null));
         intent.setComponent(info.configure);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id);
         intent.setAction("android.appwidget.action.APPWIDGET_CONFIGURE");
         return intent;
     }
 
-    public Intent remoteIntent(int id, Class<? extends AppWidgetRemote.AppWidgetRemoteService> svcClass) {
+    public Intent remoteIntent(int id, Class<?> svcClass) {
         Intent intent = new Intent(context, svcClass);
         intent.setData(Uri.fromParts("content", String.valueOf(id), null));
         return intent;
