@@ -39,8 +39,8 @@ public class Dialogs {
         return editText;
     }
 
-    public static void questionDialog(Context context, String title, String message, final Callback<Void> callback, String... captions) {
-        new AlertDialog.Builder(context).setTitle(title)
+    public static AlertDialog questionDialog(Context context, String title, String message, final Callback<Void> callback, String... captions) {
+        return new AlertDialog.Builder(context).setTitle(title)
                 .setMessage(message).setPositiveButton(captions.length > 0 ? captions[0] : "OK", new DialogInterface.OnClickListener() {
 
             @Override
