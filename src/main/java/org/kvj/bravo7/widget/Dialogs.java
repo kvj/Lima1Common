@@ -39,22 +39,37 @@ public class Dialogs {
         return editText;
     }
 
-    public static AlertDialog questionDialog(Context context, String title, String message, final Callback<Void> callback, String... captions) {
-        return new AlertDialog.Builder(context).setTitle(title)
-                .setMessage(message).setPositiveButton(captions.length > 0 ? captions[0] : "OK", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                callback.run(null);
-                dialog.dismiss();
+    public static AlertDialog questionDialog(Context context, String title, String message, final Callback<Integer> callback, String... captions) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
+            .setTitle(title)
+            .setMessage(message);
+        if (captions.length == 0) {
+            // OK/Cancel
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (which == 0) callback.run(0);
+                }
+            };
+            builder
+                .setPositiveButton("OK", listener)
+                .setNegativeButton("Cancel", listener);
+        } else {
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    callback.run(which);
+                }
+            };
+            for (int i = 0; i < captions.length; i++) {
+                if (i == 0) builder.setPositiveButton(captions[i], listener);
+                else if (i == captions.length-1) builder.setNegativeButton(captions[i], listener);
+                else builder.setNeutralButton(captions[i], listener);
             }
-        }).setNegativeButton(captions.length > 1 ? captions[1] : "Cancel", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).show();
+        }
+        return builder.show();
     }
 
     public static void toast(Context context, String message) {
