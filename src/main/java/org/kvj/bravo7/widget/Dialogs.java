@@ -56,6 +56,10 @@ public class Dialogs {
                 .setPositiveButton("OK", listener)
                 .setNegativeButton("Cancel", listener);
         } else {
+            CharSequence[] items = new CharSequence[captions.length];
+            for (int i = 0; i < captions.length; i++) { // $COMMENT
+                items[i] = captions[i];
+            }
             DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -63,11 +67,7 @@ public class Dialogs {
                     callback.run(which);
                 }
             };
-            for (int i = 0; i < captions.length; i++) {
-                if (i == 0) builder.setPositiveButton(captions[i], listener);
-                else if (i == captions.length-1) builder.setNegativeButton(captions[i], listener);
-                else builder.setNeutralButton(captions[i], listener);
-            }
+            builder.setItems(items, listener);
         }
         return builder.show();
     }
