@@ -75,6 +75,14 @@ public class AppWidgetController {
         return update(id, update.update(this, id));
     }
 
+    public boolean valid(int id, AppWidget update) {
+        int[] ids = ids(update.getClass());
+        for (int _id : ids) { // Update every widget
+            if (_id == id) return true;
+        }
+        return false;
+    }
+
     public boolean updateAll(AppWidget update) {
         int[] ids = ids(update.getClass());
         for (int id : ids) { // Update every widget
