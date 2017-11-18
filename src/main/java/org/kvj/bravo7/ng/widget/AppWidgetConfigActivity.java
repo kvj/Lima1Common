@@ -17,6 +17,30 @@ import org.kvj.bravo7.log.Logger;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 abstract public class AppWidgetConfigActivity extends AppCompatActivity {
 
+    public interface OnCreatedListener {
+        void onCreated();
+    }
+
+    public static class AppWidgetConfigFragment extends org.kvj.bravo7.ng.widget.AppWidgetConfigFragment {
+
+        private OnCreatedListener listener;
+
+        public AppWidgetConfigFragment() {
+            super();
+        }
+
+        AppWidgetConfigFragment(OnCreatedListener listener) {
+            super();
+            this.listener = listener;
+        }
+
+        @Override
+        public void onCreated() {
+            super.onCreated();
+            if (listener != null) listener.onCreated();
+        }
+    }
+
     Logger logger = Logger.forInstance(this);
     protected AppWidgetConfigFragment fragment = null;
 
@@ -24,16 +48,15 @@ abstract public class AppWidgetConfigActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_appwidget_config);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.lima1_toolbar);
+        Toolbar toolbar = findViewById(R.id.lima1_toolbar);
         toolbar.setSubtitle(toolbarSubTitle());
         setSupportActionBar(toolbar);
-        this.fragment = new AppWidgetConfigFragment() {
+        this.fragment = new AppWidgetConfigFragment(new OnCreatedListener() {
             @Override
             public void onCreated() {
-                super.onCreated();
                 onPreferencesLoaded();
             }
-        };
+        });
         logger.d("Configuring:", id(), preferenceXML());
         fragment.preferenceXML(AppWidgetController.instance(this).widgetPrefName(id()), preferenceXML());
         getFragmentManager().beginTransaction().replace(R.id.lima1_appwidget_root, fragment).commit();
